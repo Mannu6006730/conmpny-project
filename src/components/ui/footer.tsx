@@ -48,9 +48,6 @@ export const Footer = () => {
               <Link to="/faq" className="block text-muted-foreground hover:text-gift-primary transition-colors">
                 FAQ
               </Link>
-              <Link to="/blog" className="block text-muted-foreground hover:text-gift-primary transition-colors">
-                Blog
-              </Link>
               <a href="mailto:info@payflex.in" className="block text-muted-foreground hover:text-gift-primary transition-colors">
                 Email Support
               </a>
