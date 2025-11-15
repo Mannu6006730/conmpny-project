@@ -99,7 +99,7 @@ const Index = () => {
                   <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Zap className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="font-semibold mb-2">Instant Delivery</h3>
+                  <h3 className="font-semibold mb-2">Fast Delivery</h3>
                   <p className="text-sm text-muted-foreground">
                     Get your gift cards delivered instantly via email or SMS
                   </p>
