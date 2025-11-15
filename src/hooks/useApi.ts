@@ -14,7 +14,7 @@ export const useApi = () => {
       
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
       
-      return "1af332588cea8577aee666065757a0d3"; // Mock authorization code
+      return "e6a2ce454b4caa3da6aa9458dbf4cbf3"; // Mock authorization code
     } catch (err) {
       setError('Authentication failed');
       throw err;
@@ -45,7 +45,7 @@ export const useApi = () => {
    
         const res = await axios.get('https://sandbox.woohoo.in/rest/v3/catalog/products',{
         headers:{
-            'Authorization':`Bearer ${'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb25zdW1lcklkIjo5NDgsImV4cCI6MTc2MzYxOTE3NSwidG9rZW4iOiJiZjlhNWFhYmViZWFjNTFmNDQzOWVmZThhYTc1MzJlOCJ9.M3kmYRLFlEwe6nD_-vIR4UTPV3wi4NldK_Xg_T5e264'}`,
+            'Authorization':`Bearer ${'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb25zdW1lcklkIjo5NDgsImV4cCI6MTc2MzgwNjA4NywidG9rZW4iOiJlNjNiOTE0MTcxZDMzNTlhOGVlODU5MWQ0NWM3ZWI3YiJ9.XBn6_u0WBcoggTuPxIIc7JbHgxsU8G3u9LeaFcKpw24'}`,
         }
       })
       console.log(res?.data)
