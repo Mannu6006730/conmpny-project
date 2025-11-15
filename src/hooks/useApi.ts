@@ -1,124 +1,26 @@
 import { useState } from 'react';
 import axios from "axios";
-import { Product, OrderRequest, OrderResponse, OrderStatus, Card, AuthResponse, Category } from '@/types/api';
+import { Product, OrderRequest, OrderResponse, OrderStatus, Card, Category } from '@/types/api';
 
-// Mock API implementation - replace with actual API calls
 export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Authentication
-  const authenticate = async (clientId: string, username: string, password: string): Promise<string> => {
-    setLoading(true);
-    try {
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      
-      return "e6a2ce454b4caa3da6aa9458dbf4cbf3"; // Mock authorization code
-    } catch (err) {
-      setError('Authentication failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getToken = async (clientId: string, clientSecret: string, authCode: string): Promise<string> => {
-    setLoading(true);
-    try {
-      // Mock token generation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.mock.token";
-    } catch (err) {
-      setError('Token generation failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+  const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.mock.token"; // <-- Replace with actual token if needed
 
   // Products
   const getProducts = async (categoryId: number, offset: number = 0, limit: number = 20): Promise<Product[]> => {
     setLoading(true);
     try {
-   
-        const res = await axios.get('https://sandbox.woohoo.in/rest/v3/catalog/products',{
-        headers:{
-            'Authorization':`Bearer ${'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb25zdW1lcklkIjo5NDgsImV4cCI6MTc2MzgwNjA4NywidG9rZW4iOiJlNjNiOTE0MTcxZDMzNTlhOGVlODU5MWQ0NWM3ZWI3YiJ9.XBn6_u0WBcoggTuPxIIc7JbHgxsU8G3u9LeaFcKpw24'}`,
-        }
-      })
-      console.log(res?.data)
-    //   await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+      const res = await axios.get(`/api/catalog/products`, {   // <-- Proxy endpoint
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       return res.data.products;
-    
     } catch (err) {
       setError('Failed to fetch products');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Orders
-  const createOrder = async (orderData: OrderRequest): Promise<OrderResponse> => {
-    setLoading(true);
-    try {
-      // Mock order creation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockOrder: OrderResponse = {
-        status: "COMPLETE",
-        orderId: `ABF${Date.now()}`,
-        refno: orderData.refno,
-        cancel: { allowed: true, allowedWithIn: 15 },
-        currency: { code: "INR", numericCode: "356", symbol: "₹" },
-        payments: orderData.payments,
-        cards: [],
-        products: {},
-        additionalTxnFields: []
-      };
-
-      return mockOrder;
-    } catch (err) {
-      setError('Order creation failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getOrderStatus = async (refno: string): Promise<OrderStatus> => {
-    setLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      return {
-        status: "COMPLETE",
-        statusLabel: "Complete",
-        statusImage: null,
-        statusLevel: null,
-        orderId: `ABF${Date.now()}`,
-        refno,
-        cancel: { allowed: true, allowedWithIn: 15 }
-      };
-    } catch (err) {
-      setError('Failed to fetch order status');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getOrderCards = async (orderId: string): Promise<Card[]> => {
-    setLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock activated cards
-      return [];
-    } catch (err) {
-      setError('Failed to fetch order cards');
+      console.error(err);
       throw err;
     } finally {
       setLoading(false);
@@ -129,20 +31,71 @@ export const useApi = () => {
   const getCategories = async (): Promise<Category[]> => {
     setLoading(true);
     try {
-      // Mock categories based on the API structure
-      const mockCategories: Category[] = [
-        { id: "1", name: "Entertainment", count: 15 },
-        { id: "2", name: "Shopping", count: 25 },
-        { id: "3", name: "Food & Dining", count: 12 },
-        { id: "4", name: "Travel", count: 8 },
-        { id: "5", name: "Gaming", count: 10 },
-        { id: "6", name: "Streaming", count: 6 }
-      ];
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return mockCategories;
+      const res = await axios.get(`/api/catalog/categories`, {   // <-- Proxy endpoint
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      return res.data.categories;
     } catch (err) {
       setError('Failed to fetch categories');
+      console.error(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Orders
+  const createOrder = async (orderData: OrderRequest): Promise<OrderResponse> => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`/api/orders`, orderData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      return res.data;
+    } catch (err) {
+      setError('Order creation failed');
+      console.error(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getOrderStatus = async (refno: string): Promise<OrderStatus> => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`/api/orders/${refno}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+      return res.data;
+    } catch (err) {
+      setError('Failed to fetch order status');
+      console.error(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getOrderCards = async (orderId: string): Promise<Card[]> => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`/api/orders/${orderId}/cards`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+      return res.data.cards;
+    } catch (err) {
+      setError('Failed to fetch order cards');
+      console.error(err);
       throw err;
     } finally {
       setLoading(false);
@@ -152,12 +105,10 @@ export const useApi = () => {
   return {
     loading,
     error,
-    authenticate,
-    getToken,
     getProducts,
     getCategories,
     createOrder,
     getOrderStatus,
-    getOrderCards
+    getOrderCards,
   };
 };
