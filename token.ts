@@ -3,7 +3,7 @@ const qs = require("qs");
 
 const payload = qs.stringify({
   grant_type: "authorization_code",
-  authorizationCode: "YOUR_JWT_CODE"
+  authorizationCode: "d10e47daacd2c3fed9a1e598d087fe5b"
 });
 
 axios
