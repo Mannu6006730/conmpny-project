@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "@/components/ui/footer";
-import AuthWrapper from "@/components/AuthWrapper";   // ⭐ NEW IMPORT
+
 
 
 import Index from "./pages/Index";
@@ -33,7 +33,7 @@ const App = () => (
         <Toaster />
         <Sonner />
 
-        <AuthWrapper>   {/* ⭐⭐ Only This Wrapper Added */}
+        
 
           <BrowserRouter>
             <SidebarProvider>
@@ -61,7 +61,7 @@ const App = () => (
             </SidebarProvider>
           </BrowserRouter>
 
-        </AuthWrapper>  {/* ⭐⭐ Wrapper Close */}
+        
 
       </TooltipProvider>
     </ThemeProvider>
