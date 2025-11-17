@@ -1,14 +1,13 @@
-const axios = require("axios");
-const qs = require("qs");
+import axios from "axios";
 
 export const getNewToken = async () => {
   try {
 
-    const payload = qs.stringify({
+    const payload = {
       clientId: "3197041d1b8f9c841e6827125d413bcb",
       username: "smartpayflexapisandbox@woohoo.in",
       password: "smartpayflexapisandbox@123"
-    });
+    };
 
     const res = await axios
       .post("https://sandbox.woohoo.in/oauth2/token", payload, {
@@ -17,8 +16,8 @@ export const getNewToken = async () => {
         },
 
       })
-    console.log("res",res)
-    const data = res.json();
+    console.log("res", res)
+    const data = res?.json();
     console.log("Token get success fully: ", data)
   } catch (error) {
     console.error("Wrror while getting token :", error)
