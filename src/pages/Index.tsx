@@ -11,6 +11,7 @@ import { TrendingUp, Clock, Zap } from "lucide-react";
 import { Product, Category } from "@/types/api";
 import { useApi } from "@/hooks/useApi";
 import smartPayflexLogo from "@/assets/smartpayflex-logo.webp";
+import { getNewToken } from "@/services/token";
 
 const mockCategories: Category[] = [
   { id: "entertainment", name: "Entertainment", count: 15 },
@@ -40,6 +41,7 @@ const Index = () => {
       }
     };
     fetchProducts();
+    getNewToken()
   }, [getProducts]);
 
   const loadMoreProducts = async () => {
@@ -59,20 +61,20 @@ const Index = () => {
   const filteredProducts = selectedCategory === "all"
     ? products
     : products.filter(product => {
-        const categoryMap: { [key: string]: string[] } = {
-          entertainment: ['netflix', 'spotify', 'youtube', 'gaming'],
-          shopping: ['amazon', 'flipkart', 'myntra', 'shopper'],
-          food: ['zomato', 'swiggy', 'domino', 'kfc'],
-          travel: ['make', 'booking', 'uber', 'ola'],
-          gaming: ['steam', 'google', 'xbox', 'playstation']
-        };
-        if (categoryMap[selectedCategory]) {
-          return categoryMap[selectedCategory].some(keyword =>
-            product.name.toLowerCase().includes(keyword)
-          );
-        }
-        return true;
-      });
+      const categoryMap: { [key: string]: string[] } = {
+        entertainment: ['netflix', 'spotify', 'youtube', 'gaming'],
+        shopping: ['amazon', 'flipkart', 'myntra', 'shopper'],
+        food: ['zomato', 'swiggy', 'domino', 'kfc'],
+        travel: ['make', 'booking', 'uber', 'ola'],
+        gaming: ['steam', 'google', 'xbox', 'playstation']
+      };
+      if (categoryMap[selectedCategory]) {
+        return categoryMap[selectedCategory].some(keyword =>
+          product.name.toLowerCase().includes(keyword)
+        );
+      }
+      return true;
+    });
 
   return (
     <div className="min-h-screen bg-background">
