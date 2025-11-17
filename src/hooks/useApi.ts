@@ -1,72 +1,111 @@
-import { useState } from 'react';
+import { useState } from "react";
 import axios from "axios";
-import { Product, OrderRequest, OrderResponse, OrderStatus, Card, AuthResponse, Category } from '@/types/api';
+import {
+  Product,
+  OrderRequest,
+  OrderResponse,
+  OrderStatus,
+  Card,
+  Category,
+} from "@/types/api";
 
-// Mock API implementation - replace with actual API calls
+// ✔ FINAL Clean API Hook
 export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Authentication
-  const authenticate = async (clientId: string, username: string, password: string): Promise<string> => {
+  const BASE = "https://sandbox.woohoo.in";
+
+  /* -----------------------------------------
+   * 1️⃣ AUTHENTICATION → AUTH CODE
+   ----------------------------------------- */
+  const authenticate = async (
+    clientId: string,
+    username: string,
+    password: string
+  ): Promise<string> => {
     setLoading(true);
     try {
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      
-      return "e6a2ce454b4caa3da6aa9458dbf4cbf3"; // Mock authorization code
+      const res = await axios.post(`${BASE}/oauth2/verify`, {
+        clientId,
+        username,
+        password,
+      });
+
+      return res.data.authorizationCode; // ✔ Correct field
     } catch (err) {
-      setError('Authentication failed');
+      setError("Authentication failed");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const getToken = async (clientId: string, clientSecret: string, authCode: string): Promise<string> => {
+  /* -----------------------------------------
+   * 2️⃣ TOKEN API → ACCESS TOKEN
+   ----------------------------------------- */
+  const getToken = async (
+    clientId: string,
+    clientSecret: string,
+    authCode: string
+  ): Promise<string> => {
     setLoading(true);
     try {
-      // Mock token generation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.mock.token";
+      const res = await axios.post(`${BASE}/oauth2/token`, {
+        clientId,
+        clientSecret,
+        authorizationCode: authCode,
+      });
+
+      return res.data.token; // ✔ Final token
     } catch (err) {
-      setError('Token generation failed');
+      setError("Token generation failed");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // Products
-  const getProducts = async (categoryId: number, offset: number = 0, limit: number = 20): Promise<Product[]> => {
+  /* -----------------------------------------
+   * 3️⃣ GET PRODUCTS (REAL API, NO HARDCODE TOKEN)
+   ----------------------------------------- */
+  const getProducts = async (
+    token: string,
+    categoryId: number,
+    offset: number = 0,
+    limit: number = 20
+  ): Promise<Product[]> => {
     setLoading(true);
     try {
-   
-        const res = await axios.get('https://sandbox.woohoo.in/rest/v3/catalog/products',{
-        headers:{
-            'Authorization':`Bearer ${'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb25zdW1lcklkIjo5NDgsImV4cCI6MTc2MzgwNjA4NywidG9rZW4iOiJlNjNiOTE0MTcxZDMzNTlhOGVlODU5MWQ0NWM3ZWI3YiJ9.XBn6_u0WBcoggTuPxIIc7JbHgxsU8G3u9LeaFcKpw24'}`,
+      const res = await axios.get(
+        `${BASE}/rest/v3/catalog/products?categoryId=${categoryId}&offset=${offset}&limit=${limit}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ✔ Dynamic token
+          },
         }
-      })
-      console.log(res?.data)
-    //   await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+      );
+
       return res.data.products;
-    
     } catch (err) {
-      setError('Failed to fetch products');
+      setError("Failed to fetch products");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // Orders
-  const createOrder = async (orderData: OrderRequest): Promise<OrderResponse> => {
+  /* -----------------------------------------
+   * 4️⃣ CREATE ORDER (YOU KEPT MOCK → SO REMAINS MOCK)
+   ----------------------------------------- */
+  const createOrder = async (
+    orderData: OrderRequest
+  ): Promise<OrderResponse> => {
     setLoading(true);
     try {
-      // Mock order creation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Mock response stays as you had it
       const mockOrder: OrderResponse = {
         status: "COMPLETE",
         orderId: `ABF${Date.now()}`,
@@ -76,23 +115,26 @@ export const useApi = () => {
         payments: orderData.payments,
         cards: [],
         products: {},
-        additionalTxnFields: []
+        additionalTxnFields: [],
       };
 
       return mockOrder;
     } catch (err) {
-      setError('Order creation failed');
+      setError("Order creation failed");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  /* -----------------------------------------
+   * 5️⃣ ORDER STATUS (MOCK)
+   ----------------------------------------- */
   const getOrderStatus = async (refno: string): Promise<OrderStatus> => {
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       return {
         status: "COMPLETE",
         statusLabel: "Complete",
@@ -100,49 +142,51 @@ export const useApi = () => {
         statusLevel: null,
         orderId: `ABF${Date.now()}`,
         refno,
-        cancel: { allowed: true, allowedWithIn: 15 }
+        cancel: { allowed: true, allowedWithIn: 15 },
       };
     } catch (err) {
-      setError('Failed to fetch order status');
+      setError("Failed to fetch order status");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  /* -----------------------------------------
+   * 6️⃣ ORDER CARDS (MOCK)
+   ----------------------------------------- */
   const getOrderCards = async (orderId: string): Promise<Card[]> => {
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock activated cards
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return [];
     } catch (err) {
-      setError('Failed to fetch order cards');
+      setError("Failed to fetch order cards");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // Categories
+  /* -----------------------------------------
+   * 7️⃣ GET CATEGORIES (MOCK - AS YOU USE)
+   ----------------------------------------- */
   const getCategories = async (): Promise<Category[]> => {
     setLoading(true);
     try {
-      // Mock categories based on the API structure
       const mockCategories: Category[] = [
         { id: "1", name: "Entertainment", count: 15 },
         { id: "2", name: "Shopping", count: 25 },
         { id: "3", name: "Food & Dining", count: 12 },
         { id: "4", name: "Travel", count: 8 },
         { id: "5", name: "Gaming", count: 10 },
-        { id: "6", name: "Streaming", count: 6 }
+        { id: "6", name: "Streaming", count: 6 },
       ];
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       return mockCategories;
     } catch (err) {
-      setError('Failed to fetch categories');
+      setError("Failed to fetch categories");
       throw err;
     } finally {
       setLoading(false);
@@ -158,6 +202,6 @@ export const useApi = () => {
     getCategories,
     createOrder,
     getOrderStatus,
-    getOrderCards
+    getOrderCards,
   };
 };

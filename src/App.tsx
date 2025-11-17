@@ -7,6 +7,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "@/components/ui/footer";
+import AuthWrapper from "@/components/AuthWrapper";   // ⭐ NEW IMPORT
+
+
 import Index from "./pages/Index";
 import ProductDetails from "./pages/ProductDetails";
 import Orders from "./pages/Orders";
@@ -29,31 +32,37 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <SidebarProvider>
-            <div className="flex min-h-screen w-full">
-              <AppSidebar />
-              <div className="flex-1 flex flex-col">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/product/:sku" element={<ProductDetails />} />
-                  <Route path="/orders/:orderId" element={<Orders />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/how-it-works" element={<HowItWorks />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/bogo" element={<BuyOneGetOne />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/terms-conditions" element={<TermsConditions />} />
-                  <Route path="/refund-policy" element={<RefundPolicy />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <Footer />
+
+        <AuthWrapper>   {/* ⭐⭐ Only This Wrapper Added */}
+
+          <BrowserRouter>
+            <SidebarProvider>
+              <div className="flex min-h-screen w-full">
+                <AppSidebar />
+                <div className="flex-1 flex flex-col">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/product/:sku" element={<ProductDetails />} />
+                    <Route path="/orders/:orderId" element={<Orders />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/bogo" element={<BuyOneGetOne />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/terms-conditions" element={<TermsConditions />} />
+                    <Route path="/refund-policy" element={<RefundPolicy />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <Footer />
+                </div>
               </div>
-            </div>
-          </SidebarProvider>
-        </BrowserRouter>
+            </SidebarProvider>
+          </BrowserRouter>
+
+        </AuthWrapper>  {/* ⭐⭐ Wrapper Close */}
+
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
