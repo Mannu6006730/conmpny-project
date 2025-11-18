@@ -1,18 +1,19 @@
 import axios from "axios";
+import { Signature } from "lucide-react";
 
 export const getNewToken = async () => {
   try {
 
     const payload = {
       clientId: "3197041d1b8f9c841e6827125d413bcb",
-      username: "smartpayflexapisandbox@woohoo.in",
-      password: "smartpayflexapisandbox@123"
+      clientSecret: "e105bcb60112f9102cad36e5856464b4",
+      Signature: "e98dd569a2976628a278da29cdabc5a545caa5bd34b94f9c596b97fe6404c794b58fb43f78d6fd0ba77e91637786942a053d47eb56984b51f618ac3fe360568f"
     };
 
     const res = await axios
       .post("https://sandbox.woohoo.in/oauth2/token", payload, {
         headers: {
-          "signature": "15c09fb7245a8a1ba949f9e39a773621fed0a2753e7803826c2be96cbae4242f218e564fce3e5638104af596c31d0a4357b3475fcc6cc2f5d4d37854dd9fce6a",
+          "Content-Type": "application/json",
         },
 
       })
