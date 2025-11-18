@@ -17,7 +17,7 @@ export const getNewToken = async () => {
 
       })
     console.log("res", res)
-    const data = res?.json();
+    const data = res.data;
     console.log("Token get success fully: ", data)
   } catch (error) {
     console.error("Wrror while getting token :", error)
