@@ -11,7 +11,7 @@ import { TrendingUp, Clock, Zap } from "lucide-react";
 import { Product, Category } from "@/types/api";
 import { useApi } from "@/hooks/useApi";
 import smartPayflexLogo from "@/assets/smartpayflex-logo.webp";
-import { getNewToken } from "@/services/token";
+import { getToken } from "@/services/token";
 
 const mockCategories: Category[] = [
   { id: "entertainment", name: "Entertainment", count: 15 },
@@ -41,7 +41,7 @@ const Index = () => {
       }
     };
     fetchProducts();
-    getNewToken()
+    getToken()
   }, [getProducts]);
 
   const loadMoreProducts = async () => {

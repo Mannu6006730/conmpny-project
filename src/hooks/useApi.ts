@@ -1,87 +1,58 @@
-import { useState } from 'react';
-import axios from "axios";
-import { Product, OrderRequest, OrderResponse, OrderStatus, Card, AuthResponse, Category } from '@/types/api';
+import { useState } from "react";
+import API from "@/services/api"; // axios instance with baseURL pointing to backend
+import type {
+  Product,
+  OrderRequest,
+  OrderResponse,
+  OrderStatus,
+  Card,
+  Category,
+} from "@/types/api";
 
-// Mock API implementation - replace with actual API calls
 export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Authentication
-  const authenticate = async (clientId: string, username: string, password: string): Promise<string> => {
+  const getProducts = async (
+    categoryId?: number,
+    offset: number = 0,
+    limit: number = 20
+  ): Promise<Product[]> => {
     setLoading(true);
     try {
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      
-      return "d10e47daacd2c3fed9a1e598d087fe5b"; // Mock authorization code
-    } catch (err) {
-      setError('Authentication failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getToken = async (clientId: string, clientSecret: string, authCode: string): Promise<string> => {
-    setLoading(true);
-    try {
-      // Mock token generation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.mock.token";
-    } catch (err) {
-      setError('Token generation failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Products
-  const getProducts = async (categoryId: number, offset: number = 0, limit: number = 20): Promise<Product[]> => {
-    setLoading(true);
-    try {
-   
-        const res = await axios.get('https://sandbox.woohoo.in/rest/v3/catalog/products',{
-        headers:{
-            'Authorization':`Bearer ${'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb25zdW1lcklkIjo5NDgsImV4cCI6MTc2Mzk2MzMwMywidG9rZW4iOiI1MDkwZGJjMDIxZDUwNzRlMGY2ODUwNjRmMTg5NmRiNCJ9.KhIk6EIFD9cDssKqAYwbcguWv_IDpiljgzdTU4B7Lx0'}`,
-        }
-      })
-      console.log(res?.data)
-    //   await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+      const url = categoryId
+        ? `/catalog/products?categoryId=${categoryId}&offset=${offset}&limit=${limit}`
+        : `/catalog/products?offset=${offset}&limit=${limit}`;
+      const res = await API.get<{ products: Product[] }>(url);
       return res.data.products;
-    
-    } catch (err) {
-      setError('Failed to fetch products');
+    } catch (err: any) {
+      setError("Failed to fetch products");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // Orders
+  const getCategories = async (): Promise<Category[]> => {
+    setLoading(true);
+    try {
+      const res = await API.get<Category[]>("/catalog/categories");
+      return res.data;
+    } catch (err: any) {
+      setError("Failed to fetch categories");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const createOrder = async (orderData: OrderRequest): Promise<OrderResponse> => {
     setLoading(true);
     try {
-      // Mock order creation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockOrder: OrderResponse = {
-        status: "COMPLETE",
-        orderId: `ABF${Date.now()}`,
-        refno: orderData.refno,
-        cancel: { allowed: true, allowedWithIn: 15 },
-        currency: { code: "INR", numericCode: "356", symbol: "₹" },
-        payments: orderData.payments,
-        cards: [],
-        products: {},
-        additionalTxnFields: []
-      };
-
-      return mockOrder;
-    } catch (err) {
-      setError('Order creation failed');
+      const res = await API.post<OrderResponse>("/order/create", orderData);
+      return res.data;
+    } catch (err: any) {
+      setError("Failed to create order");
       throw err;
     } finally {
       setLoading(false);
@@ -91,19 +62,10 @@ export const useApi = () => {
   const getOrderStatus = async (refno: string): Promise<OrderStatus> => {
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      return {
-        status: "COMPLETE",
-        statusLabel: "Complete",
-        statusImage: null,
-        statusLevel: null,
-        orderId: `ABF${Date.now()}`,
-        refno,
-        cancel: { allowed: true, allowedWithIn: 15 }
-      };
-    } catch (err) {
-      setError('Failed to fetch order status');
+      const res = await API.get<OrderStatus>(`/order/status/${refno}`);
+      return res.data;
+    } catch (err: any) {
+      setError("Failed to fetch order status");
       throw err;
     } finally {
       setLoading(false);
@@ -113,36 +75,23 @@ export const useApi = () => {
   const getOrderCards = async (orderId: string): Promise<Card[]> => {
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock activated cards
-      return [];
-    } catch (err) {
-      setError('Failed to fetch order cards');
+      const res = await API.get<Card[]>(`/order/cards/${orderId}`);
+      return res.data;
+    } catch (err: any) {
+      setError("Failed to fetch order cards");
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // Categories
-  const getCategories = async (): Promise<Category[]> => {
+  const getToken = async (): Promise<string> => {
     setLoading(true);
     try {
-      // Mock categories based on the API structure
-      const mockCategories: Category[] = [
-        { id: "1", name: "Entertainment", count: 15 },
-        { id: "2", name: "Shopping", count: 25 },
-        { id: "3", name: "Food & Dining", count: 12 },
-        { id: "4", name: "Travel", count: 8 },
-        { id: "5", name: "Gaming", count: 10 },
-        { id: "6", name: "Streaming", count: 6 }
-      ];
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return mockCategories;
-    } catch (err) {
-      setError('Failed to fetch categories');
+      const res = await API.post<{ token: string }>("/auth/token");
+      return res.data.token;
+    } catch (err: any) {
+      setError("Failed to get token");
       throw err;
     } finally {
       setLoading(false);
@@ -152,12 +101,11 @@ export const useApi = () => {
   return {
     loading,
     error,
-    authenticate,
     getToken,
     getProducts,
     getCategories,
     createOrder,
     getOrderStatus,
-    getOrderCards
+    getOrderCards,
   };
 };
